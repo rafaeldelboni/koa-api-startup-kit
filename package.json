@@ -1,0 +1,39 @@
+{
+  "name": "efir-api",
+  "version": "1.0.0",
+  "description": "Efir backend api",
+  "author": "Rafael Delboni <rafadelboni@gmail.com> (rafael.delboni.cc)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=7.6"
+  },
+  "main": "index.js",
+  "scripts": {
+    "precommit": "lint-staged",
+    "prepush": "yarn lint",
+    "dev": "nodemon index.js",
+    "lint": "eslint ."
+  },
+  "lint-staged": {
+    "*.{js,json}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "devDependencies": {
+    "eslint": "^4.7.2",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.2.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "husky": "^0.14.3",
+    "lint-staged": "^4.2.3",
+    "nodemon": "^1.12.1",
+    "prettier": "1.7.3"
+  },
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "koa": "^2.3.0"
+  }
+}
