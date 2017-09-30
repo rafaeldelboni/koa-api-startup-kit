@@ -1,20 +1,16 @@
-const Koa = require('koa')
-const Router = require('koa-router')
+const Koa = require("koa");
+const Router = require("koa-router");
+const logger = require("./middlewares/logger");
 
-const logger = require('./middlewares/logger')
+const app = new Koa();
 
-const app = new Koa()
+app.use(logger());
 
-app.use(logger())
+const router = new Router();
+router.get("/", function(ctx, next) {
+  ctx.body = "Hello World!";
+});
 
-const router = new Router()
+app.use(router.routes()).use(router.allowedMethods());
 
-router.get('/', function (ctx, next) {
-  ctx.body = 'Hello World!'
-})
-
-app
-  .use(router.routes())
-  .use(router.allowedMethods())
-
-module.exports = app
+module.exports = app;
