@@ -15,10 +15,7 @@
     "lint": "eslint ."
   },
   "lint-staged": {
-    "*.{js,json}": [
-      "prettier --write",
-      "git add"
-    ]
+    "*.{js}": ["prettier-standard", "git add"]
   },
   "devDependencies": {
     "eslint": "^4.7.2",
@@ -30,7 +27,8 @@
     "husky": "^0.14.3",
     "lint-staged": "^4.2.3",
     "nodemon": "^1.12.1",
-    "prettier": "1.7.3"
+    "prettier": "1.7.3",
+    "prettier-standard": "^7.0.1"
   },
   "dependencies": {
     "dotenv": "^4.0.0",
