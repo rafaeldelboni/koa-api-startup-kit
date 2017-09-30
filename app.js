@@ -7,7 +7,7 @@ const app = new Koa()
 app.use(logger())
 
 const router = new Router()
-router.get('/', function(ctx, next) {
+router.get('/', function (ctx, next) {
   ctx.body = 'Hello World!'
 })
 
