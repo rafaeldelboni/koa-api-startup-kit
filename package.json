@@ -11,11 +11,14 @@
   "scripts": {
     "precommit": "lint-staged",
     "prepush": "yarn lint",
-    "dev": "nodemon index.js",
-    "lint": "eslint ."
+    "dev": "nodemon src/index.js",
+    "lint": "eslint src"
   },
   "lint-staged": {
-    "*.{js}": ["prettier-standard", "git add"]
+    "*.{js}": [
+      "prettier-standard",
+      "git add"
+    ]
   },
   "devDependencies": {
     "eslint": "^4.7.2",
@@ -33,6 +36,7 @@
   "dependencies": {
     "dotenv": "^4.0.0",
     "koa": "^2.3.0",
+    "koa-bodyparser": "^4.2.0",
     "koa-router": "^7.2.1",
     "koa2-winston": "^1.7.1",
     "winston": "^2.3.1"
