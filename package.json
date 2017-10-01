@@ -15,7 +15,7 @@
     "lint": "eslint src"
   },
   "lint-staged": {
-    "*.{js}": [
+    "*.js": [
       "prettier-standard",
       "git add"
     ]
