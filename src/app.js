@@ -2,6 +2,7 @@ const Koa = require('koa')
 const body = require('koa-bodyparser')
 const logger = require('./middlewares/logger')
 
+// Routes
 const Router = require('koa-router')
 const users = require('./users/routes')
 const index = new Router()
