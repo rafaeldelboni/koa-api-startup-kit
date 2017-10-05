@@ -34,14 +34,14 @@
     "prettier-standard": "^7.0.1"
   },
   "dependencies": {
-    "boom": "^6.0.0",
     "dotenv": "^4.0.0",
+    "jsonwebtoken": "^8.0.1",
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
-    "koa-jwt": "^3.2.2",
     "koa-passport": "^4.0.1",
     "koa-router": "^7.2.1",
     "koa2-winston": "^1.7.1",
+    "passport-jwt": "^3.0.0",
     "passport-local": "^1.0.0",
     "winston": "^2.3.1"
   }

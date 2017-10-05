@@ -1,4 +1,3 @@
-const jwt = require('../middlewares/jwt')
 const auth = require('../middlewares/auth')
 
 const router = require('koa-router')({ prefix: '/user(s\\b|\\b)' })
@@ -20,9 +19,9 @@ async function getProfile (ctx) {
 }
 
 router
-  .post('/login', auth(), postLogin)
+  .post('/login', auth.local(), postLogin)
   .post('/logout', postLogout)
   .post('/signup', postSignup)
-  .get('/profile', jwt(), getProfile)
+  .get('/profile', auth.jwt(), getProfile)
 
 module.exports = router
