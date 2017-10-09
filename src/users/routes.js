@@ -3,11 +3,7 @@ const auth = require('../middlewares/auth')
 const router = require('koa-router')({ prefix: '/user(s\\b|\\b)' })
 
 async function postLogin (ctx) {
-  ctx.body = 'Token: ' + ctx.state.token
-}
-
-async function postLogout (ctx) {
-  ctx.body = 'Logout'
+  ctx.body = ctx.state.token
 }
 
 async function postSignup (ctx) {
@@ -20,7 +16,6 @@ async function getProfile (ctx) {
 
 router
   .post('/login', auth.local(), postLogin)
-  .post('/logout', postLogout)
   .post('/signup', postSignup)
   .get('/profile', auth.jwt(), getProfile)
 

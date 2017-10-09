@@ -11,6 +11,8 @@
   "scripts": {
     "precommit": "lint-staged",
     "prepush": "yarn lint",
+    "migrate": "knex migrate:latest --knexfile ./src/database/config.js",
+    "migrate:create": "knex migrate:make --knexfile ./src/database/config.js",
     "dev": "nodemon src/index.js",
     "lint": "eslint src",
     "test": "jest -t unit"
@@ -36,8 +38,11 @@
     "prettier-standard": "^7.0.1"
   },
   "dependencies": {
+    "bookshelf": "^0.10.4",
     "dotenv": "^4.0.0",
+    "joi": "^11.3.4",
     "jsonwebtoken": "^8.0.1",
+    "knex": "^0.13.0",
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
     "koa-passport": "^4.0.1",
@@ -45,6 +50,7 @@
     "koa2-winston": "^1.7.1",
     "passport-jwt": "^3.0.0",
     "passport-local": "^1.0.0",
+    "pg": "^7.3.0",
     "winston": "^2.3.1"
   }
 }
