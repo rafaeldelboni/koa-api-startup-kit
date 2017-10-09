@@ -81,3 +81,8 @@ exports.jwt = () => {
     })(ctx, next)
   }
 }
+
+module.exports = {
+  generateJwt,
+  validateJwt
+}
