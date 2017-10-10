@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken')
+const jsonwebtoken = require('jsonwebtoken')
 const passport = require('koa-passport')
 const { Strategy: LocalStrategy } = require('passport-local')
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt')
@@ -11,7 +11,7 @@ async function generateJwt (ctx, next, error, user) {
   } else if (!user) {
     ctx.throw(400, 'User not found.')
   } else {
-    ctx.state.token = jwt.sign(user, process.env.JWT_SECRET)
+    ctx.state.token = jsonwebtoken.sign(user, process.env.JWT_SECRET)
     await next()
   }
 }
@@ -60,7 +60,7 @@ passport.use(
   )
 )
 
-exports.local = () => {
+const local = () => {
   return async (ctx, next) => {
     return passport.authenticate(['local'], { session: false }, async function (
       error,
@@ -71,7 +71,7 @@ exports.local = () => {
   }
 }
 
-exports.jwt = () => {
+const jwt = () => {
   return async (ctx, next) => {
     return passport.authenticate(['jwt'], { session: false }, async function (
       error,
@@ -83,6 +83,8 @@ exports.jwt = () => {
 }
 
 module.exports = {
+  local,
+  jwt,
   generateJwt,
   validateJwt
 }

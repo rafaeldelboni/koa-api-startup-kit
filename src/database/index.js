@@ -1,12 +1,4 @@
-import knex from 'knex'
-import bookshelf from 'bookshelf'
-import config from './config'
+const knex = require('knex')
+const config = require('./config')
 
-// plugins
-import schema from './schema'
-
-export const Knex = knex(config)
-const Bookshelf = bookshelf(Knex)
-Bookshelf.plugin(schema)
-
-export default Bookshelf
+module.exports = knex(config)

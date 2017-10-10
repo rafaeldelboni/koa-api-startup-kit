@@ -1,7 +1,7 @@
 module.exports = {
   client: 'pg',
   connection: {
-    database: process.env.POSTGRES_DB || 'db_articles',
+    database: process.env.POSTGRES_DB || 'db_efir',
     host: process.env.POSTGRES_HOST || 'localhost',
     port: process.env.POSTGRES_PORT || '5432',
     user: process.env.POSTGRES_USER || 'root',

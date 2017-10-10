@@ -2,6 +2,8 @@ const Koa = require('koa')
 const body = require('koa-bodyparser')
 const logger = require('./middlewares/logger')
 
+const database = require('./database')
+
 // Routes
 const Router = require('koa-router')
 const users = require('./users/routes')
@@ -11,6 +13,8 @@ index.get('/', function (ctx, next) {
 })
 
 const app = new Koa()
+
+app.context.database = database
 
 app
   .use(body())
