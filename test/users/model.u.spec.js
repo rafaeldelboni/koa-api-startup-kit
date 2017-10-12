@@ -19,6 +19,24 @@ describe('unit', () => {
         )
         expect(validation).toBe(false)
       })
+      it('generate a password and test if is a valid', async function () {
+        const hashPassword = await userModel.generateCryptedPassword(plainText)
+        expect(typeof hashPassword).toEqual('string')
+        const validation = await userModel.checkCryptedPassword(
+          plainText,
+          hashPassword
+        )
+        expect(validation).toBe(true)
+      })
+      it('generate a password and test if is a valid', async function () {
+        const hashPassword = await userModel.generateCryptedPassword(plainText)
+        expect(typeof hashPassword).toEqual('string')
+        const validation = await userModel.checkCryptedPassword(
+          'notTheActualPassword',
+          hashPassword
+        )
+        expect(validation).toBe(false)
+      })
     })
   })
 })

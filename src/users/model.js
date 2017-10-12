@@ -1,6 +1,8 @@
 const Joi = require('joi')
 let bcrypt = require('bcrypt')
 
+const saltRounds = 10
+
 const schema = Joi.object().keys({
   first_name: Joi.string(),
   last_name: Joi.string(),
@@ -14,6 +16,10 @@ const schema = Joi.object().keys({
 
 async function checkCryptedPassword (plainTextPassword, hashPassword) {
   return bcrypt.compare(plainTextPassword, hashPassword)
+}
+
+async function generateCryptedPassword (plainTextPassword) {
+  return bcrypt.hash(plainTextPassword, saltRounds)
 }
 
 async function getByUsernamePassword (username, password) {
@@ -39,6 +45,7 @@ async function getById (id) {
 module.exports = {
   schema,
   checkCryptedPassword,
+  generateCryptedPassword,
   getByUsernamePassword,
   getById
 }
