@@ -1,7 +1,8 @@
 const Joi = require('joi')
-let bcrypt = require('bcrypt')
-
+const bcrypt = require('bcrypt')
 const saltRounds = 10
+
+const repository = require('./repository')
 
 const schema = Joi.object().keys({
   first_name: Joi.string(),
@@ -23,23 +24,45 @@ async function generateCryptedPassword (plainTextPassword) {
 }
 
 async function getByUsernamePassword (username, password) {
-  if (username === 'rafael') {
-    if (password === 'corgi') {
-      return { id: 123, name: 'rafael' }
-    } else {
-      throw new Error('Wrong Password')
-    }
-  } else {
+  const user = repository.getByUsername(username)
+  if (!user) {
     throw new Error('User not found')
   }
+  if (!checkCryptedPassword(password, user.password)) {
+    throw new Error('Incorrect password')
+  }
+  return user
 }
 
 async function getById (id) {
-  if (id === 123) {
-    return { id: 123, name: 'rafael' }
-  } else {
+  const user = repository.getById(id)
+  if (!user) {
     throw new Error('User not found')
   }
+  return user
+}
+
+async function getByUsername (username) {
+  const user = repository.getByUsername(username)
+  if (!user) {
+    throw new Error('User not found')
+  }
+  return user
+}
+
+async function save (user) {
+  await repository.create(user)
+  return { status: 'ok' }
+}
+
+async function update (user) {
+  await repository.update(user)
+  return { status: 'ok' }
+}
+
+async function removeById (id) {
+  await repository.removeById(id)
+  return { status: 'ok' }
 }
 
 module.exports = {
@@ -47,5 +70,9 @@ module.exports = {
   checkCryptedPassword,
   generateCryptedPassword,
   getByUsernamePassword,
-  getById
+  getByUsername,
+  getById,
+  save,
+  update,
+  removeById
 }
