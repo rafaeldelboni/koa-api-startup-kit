@@ -1,6 +1,16 @@
-const mockUser = { id: 123, name: 'Rafael', pass: '' }
+const mockUser = {
+  id: 123,
+  first_name: 'Rafael',
+  username: 'rafael',
+  email: 'r@r.c',
+  pass: ''
+}
 
 async function getByUsername (username) {
+  return mockUser
+}
+
+async function getByEmail (email) {
   return mockUser
 }
 
@@ -22,6 +32,7 @@ async function removeById (id) {
 
 module.exports = {
   getByUsername,
+  getByEmail,
   getById,
   create,
   update,

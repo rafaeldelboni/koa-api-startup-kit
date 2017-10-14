@@ -13,6 +13,7 @@
     "prepush": "yarn lint",
     "migrate": "knex migrate:latest --knexfile ./src/database/config.js",
     "migrate:create": "knex migrate:make --knexfile ./src/database/config.js",
+    "migrate:rollback": "knex migrate:rollback --knexfile ./src/database/config.js",
     "dev": "nodemon src/index.js",
     "lint": "eslint src",
     "test": "jest -t unit"

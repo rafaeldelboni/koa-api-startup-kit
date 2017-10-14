@@ -5,6 +5,7 @@ const mockUser = { id: 123, name: 'test', password: cryptText }
 const mockStatus = { status: 'ok' }
 
 const mockGetById = jest.fn()
+const mockGetByEmail = jest.fn()
 const mockGetByUsername = jest.fn()
 const mockCreate = jest.fn()
 const mockUpdate = jest.fn()
@@ -13,6 +14,7 @@ const mockRemoveById = jest.fn()
 jest.mock('../../src/users/repository', () => {
   return {
     getById: mockGetById,
+    getByEmail: mockGetByEmail,
     getByUsername: mockGetByUsername,
     create: mockCreate,
     update: mockUpdate,
@@ -27,10 +29,17 @@ describe('unit', () => {
     describe('model', () => {
       beforeEach(() => {
         mockGetById.mockReturnValue(mockUser)
+        mockGetByEmail.mockReturnValue(mockUser)
         mockGetByUsername.mockReturnValue(mockUser)
         mockCreate.mockReturnValue(mockStatus)
         mockUpdate.mockReturnValue(mockStatus)
         mockRemoveById.mockReturnValue(mockStatus)
+        mockGetById.mockClear()
+        mockGetByEmail.mockClear()
+        mockGetByUsername.mockClear()
+        mockCreate.mockClear()
+        mockUpdate.mockClear()
+        mockRemoveById.mockClear()
       })
       describe('checkCryptedPassword', () => {
         it('compare valid bcrypt password', async function () {
@@ -82,6 +91,169 @@ describe('unit', () => {
           expect.assertions(1)
           try {
             await userModel.getById(1)
+          } catch (error) {
+            expect(error.message).toBe('User not found')
+          }
+        })
+      })
+      describe('getByEmail', () => {
+        it('get user by email', async function () {
+          const user = await userModel.getByEmail('user@mail.co')
+          expect(user).toBe(mockUser)
+        })
+        it('dont get user by email', async function () {
+          mockGetByEmail.mockReturnValueOnce(null)
+          expect.assertions(1)
+          try {
+            await userModel.getByEmail('user@mail.co')
+          } catch (error) {
+            expect(error.message).toBe('Email not found')
+          }
+        })
+      })
+      describe('getByUsername', () => {
+        it('get user by username', async function () {
+          const user = await userModel.getByUsername('username')
+          expect(user).toBe(mockUser)
+        })
+        it('dont get user by username', async function () {
+          mockGetByUsername.mockReturnValueOnce(null)
+          expect.assertions(1)
+          try {
+            await userModel.getByUsername('username')
+          } catch (error) {
+            expect(error.message).toBe('Username not found')
+          }
+        })
+      })
+      describe('getByUsernameOrEmailAndPassword', () => {
+        it('get user by username and password', async function () {
+          const user = await userModel.getByUsernameOrEmailAndPassword(
+            'username',
+            plainText
+          )
+          expect(user).toBe(mockUser)
+          expect(mockGetByUsername.mock.calls.length).toBe(1)
+          expect(mockGetByEmail.mock.calls.length).toBe(0)
+        })
+        it('get user by email and password', async function () {
+          const user = await userModel.getByUsernameOrEmailAndPassword(
+            'username@email.test',
+            plainText
+          )
+          expect(user).toBe(mockUser)
+          expect(mockGetByUsername.mock.calls.length).toBe(0)
+          expect(mockGetByEmail.mock.calls.length).toBe(1)
+        })
+        it('dont get user by username and incorrect pwd', async function () {
+          expect.assertions(3)
+          try {
+            await userModel.getByUsernameOrEmailAndPassword(
+              'username',
+              'notTheActualPassword'
+            )
+          } catch (error) {
+            expect(error.message).toBe('Incorrect password')
+            expect(mockGetByUsername.mock.calls.length).toBe(1)
+            expect(mockGetByEmail.mock.calls.length).toBe(0)
+          }
+        })
+        it('dont get user by email and incorrect pwd', async function () {
+          expect.assertions(3)
+          try {
+            await userModel.getByUsernameOrEmailAndPassword(
+              'username@email.test',
+              'notTheActualPassword'
+            )
+          } catch (error) {
+            expect(error.message).toBe('Incorrect password')
+            expect(mockGetByUsername.mock.calls.length).toBe(0)
+            expect(mockGetByEmail.mock.calls.length).toBe(1)
+          }
+        })
+      })
+      describe('save', () => {
+        it('save user', async function () {
+          mockGetByEmail.mockReturnValueOnce(null)
+          mockGetByUsername.mockReturnValueOnce(null)
+          const result = await userModel.save({
+            first_name: 'First',
+            username: 'username',
+            email: 'email@test.com',
+            password: 'blabla123'
+          })
+          expect(result).toEqual({ status: 'ok' })
+        })
+        it('dont save existing username', async function () {
+          mockGetByEmail.mockReturnValueOnce(null)
+          mockGetByUsername.mockReturnValueOnce(mockUser)
+          expect.assertions(1)
+          try {
+            await userModel.save({
+              first_name: 'First',
+              username: 'username',
+              email: 'email@test.com',
+              password: 'blabla123'
+            })
+          } catch (error) {
+            expect(error.message).toBe('Username already exists')
+          }
+        })
+        it('dont save existing email', async function () {
+          mockGetByEmail.mockReturnValueOnce(mockUser)
+          mockGetByUsername.mockReturnValueOnce(null)
+          expect.assertions(1)
+          try {
+            await userModel.save({
+              first_name: 'First',
+              username: 'username',
+              email: 'email@test.com',
+              password: 'blabla123'
+            })
+          } catch (error) {
+            expect(error.message).toBe('Email already exists')
+          }
+        })
+      })
+      describe('update', () => {
+        it('should update', async function () {
+          mockGetById.mockReturnValueOnce(mockUser)
+          const result = await userModel.update({
+            id: 123,
+            first_name: 'First',
+            username: 'username',
+            email: 'email@test.com',
+            password: 'blabla123'
+          })
+          expect(result).toEqual({ status: 'ok' })
+        })
+        it('should not update non existing user', async function () {
+          mockGetById.mockReturnValueOnce(null)
+          expect.assertions(1)
+          try {
+            await userModel.update({
+              id: 123,
+              first_name: 'First',
+              username: 'username',
+              email: 'email@test.com',
+              password: 'blabla123'
+            })
+          } catch (error) {
+            expect(error.message).toBe('User not found')
+          }
+        })
+      })
+      describe('removeById', () => {
+        it('should removeById', async function () {
+          mockGetById.mockReturnValueOnce(mockUser)
+          const result = await userModel.removeById(123)
+          expect(result).toEqual({ status: 'ok' })
+        })
+        it('should not remove non existing user', async function () {
+          mockGetById.mockReturnValueOnce(null)
+          expect.assertions(1)
+          try {
+            await userModel.update(123)
           } catch (error) {
             expect(error.message).toBe('User not found')
           }

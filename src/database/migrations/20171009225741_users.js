@@ -12,6 +12,7 @@ exports.up = function (knex, Promise) {
       // User settings
       table.string('first_name', 50)
       table.string('last_name', 50)
+      table.string('username', 30).notNullable()
       table.string('email', 250).notNullable()
 
       // Password related stuff
