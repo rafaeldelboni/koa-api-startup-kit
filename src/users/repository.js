@@ -1,33 +1,68 @@
-const mockUser = {
-  id: 123,
-  first_name: 'Rafael',
-  username: 'rafael',
-  email: 'r@r.c',
-  pass: ''
-}
+const db = require('../database').pool()
+
+const COLUMNS = [
+  'users.id',
+  'users.first_name as firstName',
+  'users.last_name as lastName',
+  'users.username',
+  'users.email',
+  'users.password'
+]
 
 async function getByUsername (username) {
-  return mockUser
+  return db
+    .select(COLUMNS)
+    .from('users')
+    .where('users.username', username)
 }
 
 async function getByEmail (email) {
-  return mockUser
+  return db
+    .select(COLUMNS)
+    .from('users')
+    .where('users.email', email)
 }
 
 async function getById (id) {
-  return mockUser
+  return db
+    .select(COLUMNS)
+    .from('users')
+    .where('users.id', id)
 }
 
 async function create (user) {
-  return true
+  return db
+    .insert({
+      first_name: user.firstName,
+      last_name: user.lastName,
+      username: user.username,
+      email: user.email,
+      password: user.password,
+      created_at: Date.now(),
+      updated_at: Date.now()
+    })
+    .table('users')
 }
 
 async function update (user) {
-  return true
+  return db
+    .update({
+      first_name: user.firstName,
+      last_name: user.lastName,
+      username: user.username,
+      email: user.email,
+      password: user.password,
+      updated_at: Date.now()
+    })
+    .table('users')
+    .where('users.id', user.id)
 }
 
 async function removeById (id) {
-  return true
+  return db
+    .del()
+    .table('users')
+    .where('users.id', id)
 }
 
 module.exports = {
