@@ -3,7 +3,7 @@ const passport = require('koa-passport')
 const { Strategy: LocalStrategy } = require('passport-local')
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt')
 
-const { getByUsernamePassword, getById } = require('../users/model')
+const { getByUsernameOrEmailAndPassword, getById } = require('../users/model')
 
 async function generateJwt (ctx, next, error, user) {
   if (error) {
@@ -34,7 +34,7 @@ passport.use(
     },
     async function (username, password, callback) {
       try {
-        const user = await getByUsernamePassword(username, password)
+        const user = await getByUsernameOrEmailAndPassword(username, password)
         callback(null, user)
       } catch (error) {
         callback(error)

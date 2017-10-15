@@ -7,6 +7,7 @@ class MockedCtx {
   }
 }
 
+jest.mock('../../src/users/model', () => jest.fn())
 const auth = require('../../src/middlewares/auth')
 
 describe('unit', () => {
