@@ -1,14 +1,5 @@
 const knex = require('knex')
 const config = require('./config')
+const pool = knex(config)
 
-function initializePool () {
-  console.info('Starting DB Connection Pool')
-  return knex(config)
-}
-const pool = initializePool()
-
-module.exports = {
-  pool: () => {
-    return pool || initializePool()
-  }
-}
+module.exports = pool || knex(config)

@@ -1,4 +1,4 @@
-const db = require('../database').pool()
+const db = require('../database')
 
 const COLUMNS = [
   'users.id',
@@ -14,6 +14,7 @@ async function getByUsername (username) {
     .select(COLUMNS)
     .from('users')
     .where('users.username', username)
+    .first()
 }
 
 async function getByEmail (email) {
@@ -21,6 +22,7 @@ async function getByEmail (email) {
     .select(COLUMNS)
     .from('users')
     .where('users.email', email)
+    .first()
 }
 
 async function getById (id) {
@@ -28,6 +30,7 @@ async function getById (id) {
     .select(COLUMNS)
     .from('users')
     .where('users.id', id)
+    .first()
 }
 
 async function create (user) {
@@ -38,10 +41,11 @@ async function create (user) {
       username: user.username,
       email: user.email,
       password: user.password,
-      created_at: Date.now(),
-      updated_at: Date.now()
+      created_at: new Date().toUTCString(),
+      updated_at: new Date().toUTCString()
     })
     .table('users')
+    .returning('*')
 }
 
 async function update (user) {
@@ -52,7 +56,7 @@ async function update (user) {
       username: user.username,
       email: user.email,
       password: user.password,
-      updated_at: Date.now()
+      updated_at: new Date().toUTCString()
     })
     .table('users')
     .where('users.id', user.id)

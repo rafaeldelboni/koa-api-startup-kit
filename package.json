@@ -16,7 +16,9 @@
     "migrate:rollback": "knex migrate:rollback --knexfile ./src/database/config.js",
     "dev": "nodemon src/index.js",
     "lint": "eslint src",
-    "test": "jest -t unit"
+    "test": "jest -t unit",
+    "test:i": "jest -t integration",
+    "test:all": "jest"
   },
   "lint-staged": {
     "*.js": [
