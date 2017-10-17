@@ -12,18 +12,25 @@ describe('unit', () => {
       let validate
       let ctx = {}
       const next = jest.fn()
-      let expectedError = [
-        {
-          context: {
-            key: 'username',
-            label: 'username',
-            value: 'is not a email'
-          },
-          message: '"username" must be a valid email',
-          path: ['username'],
-          type: 'string.email'
+      let expectedError = JSON.stringify({
+        isJoi: true,
+        name: 'ValidationError',
+        details: [
+          {
+            message: '"username" must be a valid email',
+            path: ['username'],
+            type: 'string.email',
+            context: {
+              value: 'is not a email',
+              key: 'username',
+              label: 'username'
+            }
+          }
+        ],
+        _object: {
+          username: 'is not a email'
         }
-      ]
+      })
 
       beforeEach(() => {
         validate = validator(schema)
@@ -41,7 +48,9 @@ describe('unit', () => {
 
       it('should validate wrong input body with `Invalid input` body error text', async () => {
         await validate(ctx)
-        expect(ctx.throw).toHaveBeenCalledWith(500, expectedError)
+        expect(ctx.throw).toHaveBeenCalledWith(500, expectedError, {
+          expose: true
+        })
       })
 
       it('should validate correct input calling next middleware', async () => {

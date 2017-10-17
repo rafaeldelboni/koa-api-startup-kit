@@ -22,6 +22,7 @@ async function validateJwt (ctx, next, error, user) {
   } else if (!user) {
     ctx.throw(400, 'Invalid token.')
   } else {
+    ctx.state.user = user
     await next()
   }
 }

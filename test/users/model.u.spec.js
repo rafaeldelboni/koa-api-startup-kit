@@ -172,11 +172,11 @@ describe('unit', () => {
           }
         })
       })
-      describe('save', () => {
-        it('save user', async function () {
+      describe('create', () => {
+        it('create user', async function () {
           mockGetByEmail.mockReturnValueOnce(null)
           mockGetByUsername.mockReturnValueOnce(null)
-          const result = await userModel.save({
+          const result = await userModel.create({
             first_name: 'First',
             username: 'username',
             email: 'email@test.com',
@@ -184,12 +184,12 @@ describe('unit', () => {
           })
           expect(result).toEqual({ status: 'ok' })
         })
-        it('dont save existing username', async function () {
+        it('dont create existing username', async function () {
           mockGetByEmail.mockReturnValueOnce(null)
           mockGetByUsername.mockReturnValueOnce(mockUser)
           expect.assertions(1)
           try {
-            await userModel.save({
+            await userModel.create({
               first_name: 'First',
               username: 'username',
               email: 'email@test.com',
@@ -199,12 +199,12 @@ describe('unit', () => {
             expect(error.message).toBe('Username already exists')
           }
         })
-        it('dont save existing email', async function () {
+        it('dont create existing email', async function () {
           mockGetByEmail.mockReturnValueOnce(mockUser)
           mockGetByUsername.mockReturnValueOnce(null)
           expect.assertions(1)
           try {
-            await userModel.save({
+            await userModel.create({
               first_name: 'First',
               username: 'username',
               email: 'email@test.com',

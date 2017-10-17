@@ -71,13 +71,14 @@ async function getByUsernameOrEmailAndPassword (usernameOrEmail, password) {
   return user
 }
 
-async function save (user) {
+async function create (user) {
   if (await repository.getByEmail(user.email)) {
     throw new Error('Email already exists')
   }
   if (await repository.getByUsername(user.username)) {
     throw new Error('Username already exists')
   }
+  user.password = await generateCryptedPassword(user.password)
   await repository.create(user)
   return { status: 'ok' }
 }
@@ -102,7 +103,7 @@ module.exports = {
   getByEmail,
   getByUsername,
   getByUsernameOrEmailAndPassword,
-  save,
+  create,
   update,
   removeById
 }
