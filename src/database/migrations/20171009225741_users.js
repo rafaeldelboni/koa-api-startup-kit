@@ -24,6 +24,10 @@ exports.up = function (knex, Promise) {
       table.timestamp('created_at').defaultTo(knex.fn.now())
       table.timestamp('updated_at').defaultTo(knex.fn.now())
 
+      // Unique
+      table.unique('username')
+      table.unique('email')
+
       // Index
       table.index('id')
     })
