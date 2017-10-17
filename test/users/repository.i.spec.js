@@ -1,13 +1,11 @@
 const database = require('../../src/database')
 const repository = require('../../src/users/repository')
 
-const getRandomInt = () => Math.floor(Math.random() * 9999 + 1)
-
 let userFactory = attrs => ({
   firstName: attrs.firstName || 'first',
   lastName: attrs.lastName || 'last',
-  username: attrs.username || `username${getRandomInt()}`,
-  email: attrs.email || `email${getRandomInt()}@email.cc`,
+  username: attrs.username || `username${Date.now()}`,
+  email: attrs.email || `email${Date.now()}@email.cc`,
   password: attrs.password || 'password'
 })
 
