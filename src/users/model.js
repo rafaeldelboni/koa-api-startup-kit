@@ -20,21 +20,23 @@ const schema = Joi.object().keys({
     .required()
 })
 
-function isEmail (usernameOrEmail) {
-  return Joi.validate(
+const removeSensitiveData = user => {
+  delete user.password
+  return user
+}
+
+const isEmail = usernameOrEmail =>
+  Joi.validate(
     usernameOrEmail,
     Joi.string().email(),
     (err, value) => err === null
   )
-}
 
-async function checkCryptedPassword (plainTextPassword, hashPassword) {
-  return bcrypt.compare(plainTextPassword, hashPassword)
-}
+const checkCryptedPassword = (plainTextPassword, hashPassword) =>
+  bcrypt.compare(plainTextPassword, hashPassword)
 
-async function generateCryptedPassword (plainTextPassword) {
-  return bcrypt.hash(plainTextPassword, saltRounds)
-}
+const generateCryptedPassword = plainTextPassword =>
+  bcrypt.hash(plainTextPassword, saltRounds)
 
 async function getById (id) {
   const user = await repository.getById(id)
@@ -68,7 +70,8 @@ async function getByUsernameOrEmailAndPassword (usernameOrEmail, password) {
   if (!await checkCryptedPassword(password, user.password)) {
     throw new Error('Incorrect password')
   }
-  return user
+
+  return removeSensitiveData(user)
 }
 
 async function create (user) {
@@ -78,20 +81,27 @@ async function create (user) {
   if (await repository.getByUsername(user.username)) {
     throw new Error('Username already exists')
   }
+
   user.password = await generateCryptedPassword(user.password)
-  await repository.create(user)
-  return { status: 'ok' }
+
+  const created = await repository.create(user)
+  return {
+    status: 'ok',
+    user: removeSensitiveData(created[0])
+  }
 }
 
 async function update (user) {
   await getById(user.id)
   await repository.update(user)
+
   return { status: 'ok' }
 }
 
 async function removeById (id) {
   await getById(id)
   await repository.removeById(id)
+
   return { status: 'ok' }
 }
 

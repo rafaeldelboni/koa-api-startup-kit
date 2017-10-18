@@ -39,7 +39,7 @@ describe('unit', () => {
 
           await auth.generateJwt(ctx, next, error, user)
           expect(ctx.state.token).toMatch(
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
+            'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwibmFtZSI6InVzZXIifQ.QRNHzmI2IQZr_J60pt6zUrRjPlnxUt5N6FYYdaR8bXs'
           )
           expect(next).toHaveBeenCalledWith()
         })

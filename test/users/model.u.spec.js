@@ -1,7 +1,7 @@
 const plainText = 'pass'
 const cryptText = '$2a$06$/S0FLSPCz01ov4s4qeQ1qe5o0EYP0hT/tFlQ.HejoyFjC.4MtOfk2'
 
-const mockUser = { id: 123, name: 'test', password: cryptText }
+let mockUser = { id: 123, name: 'test', password: cryptText }
 const mockStatus = { status: 'ok' }
 
 const mockGetById = jest.fn()
@@ -28,10 +28,11 @@ describe('unit', () => {
   describe('users', () => {
     describe('model', () => {
       beforeEach(() => {
+        mockUser = { id: 123, name: 'test', password: cryptText }
         mockGetById.mockReturnValue(mockUser)
         mockGetByEmail.mockReturnValue(mockUser)
         mockGetByUsername.mockReturnValue(mockUser)
-        mockCreate.mockReturnValue(mockStatus)
+        mockCreate.mockReturnValue([mockUser])
         mockUpdate.mockReturnValue(mockStatus)
         mockRemoveById.mockReturnValue(mockStatus)
         mockGetById.mockClear()
@@ -182,7 +183,13 @@ describe('unit', () => {
             email: 'email@test.com',
             password: 'blabla123'
           })
-          expect(result).toEqual({ status: 'ok' })
+          expect(result).toEqual({
+            status: 'ok',
+            user: {
+              id: 123,
+              name: 'test'
+            }
+          })
         })
         it('dont create existing username', async function () {
           mockGetByEmail.mockReturnValueOnce(null)

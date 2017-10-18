@@ -5,13 +5,16 @@ const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt')
 
 const { getByUsernameOrEmailAndPassword, getById } = require('../users/model')
 
+const signJwt = user =>
+  jsonwebtoken.sign(JSON.stringify(user), process.env.JWT_SECRET)
+
 async function generateJwt (ctx, next, error, user) {
   if (error) {
     ctx.throw(401, error)
   } else if (!user) {
     ctx.throw(400, 'User not found.')
   } else {
-    ctx.state.token = jsonwebtoken.sign(user, process.env.JWT_SECRET)
+    ctx.state.token = await signJwt(user)
     await next()
   }
 }
@@ -52,6 +55,7 @@ passport.use(
     },
     async function (payload, callback) {
       try {
+        console.log(payload)
         const user = await getById(payload.id)
         callback(null, user)
       } catch (error) {
@@ -87,5 +91,6 @@ module.exports = {
   local,
   jwt,
   generateJwt,
-  validateJwt
+  validateJwt,
+  signJwt
 }

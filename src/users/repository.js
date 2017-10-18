@@ -45,7 +45,7 @@ async function create (user) {
       updated_at: new Date().toUTCString()
     })
     .table('users')
-    .returning('*')
+    .returning(COLUMNS)
 }
 
 async function update (user) {
