@@ -5,8 +5,8 @@ const saltRounds = 10
 const repository = require('./repository')
 
 const schema = Joi.object().keys({
-  first_name: Joi.string(),
-  last_name: Joi.string(),
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
   username: Joi.string()
     .alphanum()
     .min(3)
@@ -43,7 +43,8 @@ async function getById (id) {
   if (!user) {
     throw new Error('User not found')
   }
-  return user
+
+  return removeSensitiveData(user)
 }
 
 async function getByEmail (username) {
@@ -51,7 +52,8 @@ async function getByEmail (username) {
   if (!user) {
     throw new Error('Email not found')
   }
-  return user
+
+  return removeSensitiveData(user)
 }
 
 async function getByUsername (username) {
@@ -59,13 +61,18 @@ async function getByUsername (username) {
   if (!user) {
     throw new Error('Username not found')
   }
-  return user
+
+  return removeSensitiveData(user)
 }
 
 async function getByUsernameOrEmailAndPassword (usernameOrEmail, password) {
   const user = isEmail(usernameOrEmail)
-    ? await getByEmail(usernameOrEmail)
-    : await getByUsername(usernameOrEmail)
+    ? await repository.getByEmail(usernameOrEmail)
+    : await repository.getByUsername(usernameOrEmail)
+
+  if (!user) {
+    throw new Error('User not found')
+  }
 
   if (!await checkCryptedPassword(password, user.password)) {
     throw new Error('Incorrect password')
