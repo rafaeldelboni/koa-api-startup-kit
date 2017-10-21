@@ -31,4 +31,9 @@ router
   .post('/signup', validation(model.schema), postSignup)
   .get('/profile', auth.jwt(), getProfile)
 
-module.exports = router
+module.exports = {
+  postLogin,
+  postSignup,
+  getProfile,
+  routes: router.routes()
+}

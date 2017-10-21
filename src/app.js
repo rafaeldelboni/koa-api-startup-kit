@@ -18,6 +18,6 @@ app
   .use(body())
   .use(logger())
   .use(index.routes())
-  .use(users.routes())
+  .use(users.routes)
 
 module.exports = app
