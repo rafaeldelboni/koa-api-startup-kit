@@ -20,8 +20,8 @@ module.exports = () => {
 
 function logErrorFactory () {
   const logger = new winston.Logger(options)
-  return function logAndThrow (error) {
+  return function logAndThrow (error, status = 500) {
     logger.error(error)
-    this.throw(500, error, { expose: true })
+    this.throw(status, error, { expose: true })
   }
 }
