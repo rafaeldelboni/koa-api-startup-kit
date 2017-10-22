@@ -5,14 +5,16 @@ const router = require('koa-router')({ prefix: '/user(s\\b|\\b)' })
 const model = require('./model')
 
 async function postLogin (ctx) {
-  ctx.body = ctx.state.token
+  ctx.body = { token: ctx.state.token }
 }
 
 async function postSignup (ctx) {
   const user = ctx.request.body
   try {
     const created = await model.create(user)
-    ctx.body = await auth.signJwt(created.user)
+    ctx.body = {
+      token: await auth.signJwt(created.user)
+    }
   } catch (error) {
     ctx.logAndThrow(error)
   }

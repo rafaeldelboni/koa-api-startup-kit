@@ -64,13 +64,13 @@ describe('unit', () => {
       describe('postLogin', () => {
         it('should return ctx.token in body', async function () {
           await userRoutes.postLogin(ctx)
-          expect(ctx.body).toEqual('token')
+          expect(ctx.body).toEqual({ token: 'token' })
         })
       })
       describe('postSignup', () => {
         it('should return ctx.token in body', async function () {
           await userRoutes.postSignup(ctx)
-          expect(ctx.body).toEqual('token')
+          expect(ctx.body).toEqual({ token: 'token' })
           expect(mockCreate.mock.calls).toEqual([[mockUser]])
           expect(mockSignJwt.mock.calls).toEqual([[mockUser]])
         })

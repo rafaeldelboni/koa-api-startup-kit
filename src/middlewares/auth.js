@@ -33,8 +33,8 @@ async function validateJwt (ctx, next, error, user) {
 passport.use(
   new LocalStrategy(
     {
-      usernameField: 'user',
-      passwordField: 'pass'
+      usernameField: 'username',
+      passwordField: 'password'
     },
     async function (username, password, callback) {
       try {
@@ -55,7 +55,6 @@ passport.use(
     },
     async function (payload, callback) {
       try {
-        console.log(payload)
         const user = await getById(payload.id)
         callback(null, user)
       } catch (error) {

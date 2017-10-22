@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`acceptance users DELETE / should delete user 1`] = `
+Object {
+  "status": "ok",
+}
+`;
+
+exports[`acceptance users GET / should return user 1`] = `
+Object {
+  "email": "test@test.cc",
+  "firstName": "first",
+  "id": 1,
+  "lastName": "last",
+  "username": "getuser",
+}
+`;
+
+exports[`acceptance users POST /login should return token 1`] = `
+Object {
+  "email": "test@test.cc",
+  "firstName": "first",
+  "id": 1,
+  "lastName": "last",
+  "username": "loginuser",
+}
+`;
+
+exports[`acceptance users POST /signup should return token 1`] = `
+Object {
+  "email": "test@test.cc",
+  "firstName": "first",
+  "id": 1,
+  "lastName": "last",
+  "username": "signupuser",
+}
+`;
