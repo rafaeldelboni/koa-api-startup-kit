@@ -30,6 +30,7 @@ async function get (ctx) {
 
 async function put (ctx) {
   const user = ctx.request.body
+  user.id = parseInt(ctx.params.id)
   try {
     if (ctx.state.user.id !== user.id) {
       throw ctx.logAndThrow("You don't have access to this action", 403)
@@ -53,10 +54,10 @@ async function remove (ctx) {
 }
 
 router
-  .post('/login', auth.local(), postLogin)
-  .post('/signup', validation(model.schema), postSignup)
+  .post('/login', validation(model.schemaLogin), auth.local(), postLogin)
+  .post('/signup', validation(model.schemaSignup), postSignup)
   .get('/', auth.jwt(), get)
-  .put('/', auth.jwt(), put)
+  .put('/:id', validation(model.schemaUpdate), auth.jwt(), put)
   .delete('/:id', auth.jwt(), remove)
 
 module.exports = {

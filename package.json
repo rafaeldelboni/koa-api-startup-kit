@@ -19,7 +19,7 @@
     "test": "jest -t unit",
     "test:i": "jest -t integration",
     "test:a": "jest -t acceptance",
-    "test:all": "jest"
+    "test:all": "jest --runInBand"
   },
   "lint-staged": {
     "*.js": [
@@ -56,6 +56,7 @@
     "passport-jwt": "^3.0.0",
     "passport-local": "^1.0.0",
     "pg": "^7.3.0",
+    "snakecase-keys": "^1.1.0",
     "winston": "^2.3.1"
   }
 }

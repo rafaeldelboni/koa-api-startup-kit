@@ -16,7 +16,8 @@ let userFactory = (attrs = {}) => ({
   lastName: attrs.lastName || 'last',
   username: attrs.username || `username${Date.now()}`,
   email: attrs.email || `email${Date.now()}@email.cc`,
-  password: attrs.password || cryptPass
+  password: attrs.password || cryptPass,
+  passwordConfirm: attrs.passwordConfirm || cryptPass
 })
 
 /*
@@ -57,7 +58,8 @@ describe('acceptance', () => {
         userFactory({
           username: 'signupuser',
           email: 'test@test.cc',
-          password: 'test1234'
+          password: 'test1234',
+          passwordConfirm: 'test1234'
         })
       )
 
@@ -74,7 +76,8 @@ describe('acceptance', () => {
         userFactory({
           username: 'getuser',
           email: 'test@test.cc',
-          password: 'test1234'
+          password: 'test1234',
+          passwordConfirm: 'test1234'
         })
       )
 
@@ -90,7 +93,8 @@ describe('acceptance', () => {
         userFactory({
           username: 'deleteuser',
           email: 'test@test.cc',
-          password: 'test1234'
+          password: 'test1234',
+          passwordConfirm: 'test1234'
         })
       )
 

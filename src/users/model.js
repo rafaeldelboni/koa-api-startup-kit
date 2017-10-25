@@ -4,7 +4,21 @@ const saltRounds = 10
 
 const repository = require('./repository')
 
-const schema = Joi.object().keys({
+const schemaLogin = Joi.object().keys({
+  username: Joi.alternatives([
+    Joi.string()
+      .alphanum()
+      .min(3)
+      .max(30)
+      .required(),
+    Joi.string()
+      .email()
+      .required()
+  ]).required(),
+  password: Joi.string().required()
+})
+
+const schemaSignup = Joi.object().keys({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   username: Joi.string()
@@ -17,6 +31,30 @@ const schema = Joi.object().keys({
     .required(),
   password: Joi.string()
     .min(8)
+    .max(25)
+    .required(),
+  passwordConfirm: Joi.any()
+    .valid(Joi.ref('password'))
+    .required()
+    .options({
+      language: {
+        any: {
+          allowOnly: 'Passwords must be the same'
+        }
+      }
+    })
+})
+
+const schemaUpdate = Joi.object().keys({
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
+  username: Joi.string()
+    .alphanum()
+    .min(3)
+    .max(30)
+    .required(),
+  email: Joi.string()
+    .email()
     .required()
 })
 
@@ -49,6 +87,7 @@ async function getById (id) {
 
 async function getByEmail (username) {
   const user = await repository.getByEmail(username)
+
   if (!user) {
     throw new Error('Email not found')
   }
@@ -58,6 +97,7 @@ async function getByEmail (username) {
 
 async function getByUsername (username) {
   const user = await repository.getByUsername(username)
+
   if (!user) {
     throw new Error('Username not found')
   }
@@ -100,6 +140,11 @@ async function create (user) {
 
 async function update (user) {
   await getById(user.id)
+
+  user.password = user.password
+    ? await generateCryptedPassword(user.password)
+    : null
+
   await repository.update(user)
 
   return { status: 'ok' }
@@ -113,7 +158,9 @@ async function removeById (id) {
 }
 
 module.exports = {
-  schema,
+  schemaLogin,
+  schemaSignup,
+  schemaUpdate,
   checkCryptedPassword,
   generateCryptedPassword,
   getById,

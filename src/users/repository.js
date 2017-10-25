@@ -1,3 +1,4 @@
+const snakeCase = require('snakecase-keys')
 const db = require('../database')
 
 const COLUMNS = [
@@ -34,30 +35,24 @@ async function getById (id) {
 }
 
 async function create (user) {
+  delete user.passwordConfirm
+
+  user.created_at = new Date().toUTCString()
+  user.updated_at = new Date().toUTCString()
+
   return db
-    .insert({
-      first_name: user.firstName,
-      last_name: user.lastName,
-      username: user.username,
-      email: user.email,
-      password: user.password,
-      created_at: new Date().toUTCString(),
-      updated_at: new Date().toUTCString()
-    })
+    .insert(snakeCase(user))
     .table('users')
     .returning(COLUMNS)
 }
 
 async function update (user) {
+  delete user.passwordConfirm
+
+  user.updated_at = new Date().toUTCString()
+
   return db
-    .update({
-      first_name: user.firstName,
-      last_name: user.lastName,
-      username: user.username,
-      email: user.email,
-      password: user.password,
-      updated_at: new Date().toUTCString()
-    })
+    .update(snakeCase(user))
     .table('users')
     .where('users.id', user.id)
 }
