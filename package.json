@@ -1,7 +1,7 @@
 {
   "name": "efir-api",
   "version": "1.0.0",
-  "description": "Efir backend api",
+  "description": "Koa API Startup Kit",
   "author": "Rafael Delboni <rafadelboni@gmail.com> (rafael.delboni.cc)",
   "license": "MIT",
   "engines": {
