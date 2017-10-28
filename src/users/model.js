@@ -43,6 +43,7 @@ const schemaSignup = Joi.object().keys({
         }
       }
     })
+    .strip()
 })
 
 const schemaUpdate = Joi.object().keys({
