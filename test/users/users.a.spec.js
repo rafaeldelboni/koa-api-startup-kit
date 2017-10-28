@@ -1,8 +1,8 @@
 const dotenv = require('dotenv')
 dotenv.config()
 
-jest.mock('../../src/middlewares/logger', () => {
-  return jest.fn(() => jest.fn((ctx, next) => next()))
+jest.mock('koa2-winston', () => {
+  return { logger: jest.fn(() => jest.fn((ctx, next) => next())) }
 })
 const jsonwebtoken = require('jsonwebtoken')
 const app = require('../../src/app')
@@ -20,17 +20,13 @@ let userFactory = (attrs = {}) => ({
   passwordConfirm: attrs.passwordConfirm || cryptPass
 })
 
-/*
-  .put('/', auth.jwt(), put)
-*/
-
 describe('acceptance', () => {
   const request = supertest.agent(app.listen())
   beforeEach(async () => {
     return database.table('users').truncate()
   })
   afterAll(async () => {
-    return database.destroy()
+    await database.destroy()
   })
   describe('users', () => {
     it('POST /login should return token', async function () {
@@ -110,6 +106,32 @@ describe('acceptance', () => {
       const checkDb = await repository.getById(decoded.id)
 
       expect(checkDb).toBeUndefined()
+      expect(result.status).toBe(200)
+      expect(result.body).toMatchSnapshot()
+    })
+    it('PUT / should update user', async function () {
+      const signupResult = await request.post('/users/signup').send(
+        userFactory({
+          username: 'updateuser',
+          email: 'test@test.cc',
+          password: 'test1234',
+          passwordConfirm: 'test1234'
+        })
+      )
+
+      const decoded = jsonwebtoken.verify(
+        signupResult.body.token,
+        process.env.JWT_SECRET
+      )
+
+      const result = await request
+        .put(`/users/${decoded.id}`)
+        .send({ username: 'username2' })
+        .set('Authorization', `Bearer ${signupResult.body.token}`)
+
+      const checkDb = await repository.getById(decoded.id)
+
+      expect(checkDb.username).toEqual('username2')
       expect(result.status).toBe(200)
       expect(result.body).toMatchSnapshot()
     })

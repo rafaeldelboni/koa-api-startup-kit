@@ -146,6 +146,18 @@ describe('unit', () => {
           expect(mockGetByUsername.mock.calls.length).toBe(0)
           expect(mockGetByEmail.mock.calls.length).toBe(1)
         })
+        it('dont get non existing user', async function () {
+          mockGetByUsername.mockReturnValueOnce(null)
+          expect.assertions(1)
+          try {
+            await userModel.getByUsernameOrEmailAndPassword(
+              'username',
+              plainText
+            )
+          } catch (error) {
+            expect(error.message).toBe('User not found')
+          }
+        })
         it('dont get user by username and incorrect pwd', async function () {
           expect.assertions(3)
           try {
@@ -247,6 +259,41 @@ describe('unit', () => {
             })
           } catch (error) {
             expect(error.message).toBe('User not found')
+          }
+        })
+        it('should not update user with existing email', async function () {
+          mockGetByEmail.mockReturnValueOnce({
+            id: 456,
+            email: 'email.@test.com'
+          })
+          expect.assertions(1)
+          try {
+            await userModel.update({
+              id: 123,
+              first_name: 'First',
+              username: 'username',
+              email: 'email@test.com',
+              password: 'blabla123'
+            })
+          } catch (error) {
+            expect(error.message).toBe('Email already exists')
+          }
+        })
+        it('should not update user with existing username', async function () {
+          mockGetByUsername.mockReturnValueOnce({
+            id: 456,
+            username: 'username'
+          })
+          expect.assertions(1)
+          try {
+            await userModel.update({
+              id: 123,
+              first_name: 'First',
+              username: 'username',
+              password: 'blabla123'
+            })
+          } catch (error) {
+            expect(error.message).toBe('Username already exists')
           }
         })
       })

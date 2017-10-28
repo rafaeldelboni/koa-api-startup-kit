@@ -35,3 +35,9 @@ Object {
   "username": "signupuser",
 }
 `;
+
+exports[`acceptance users PUT / should update user 1`] = `
+Object {
+  "status": "ok",
+}
+`;

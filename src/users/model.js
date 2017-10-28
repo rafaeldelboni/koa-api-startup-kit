@@ -46,16 +46,22 @@ const schemaSignup = Joi.object().keys({
 })
 
 const schemaUpdate = Joi.object().keys({
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
+  firstName: Joi.string()
+    .required()
+    .optional(),
+  lastName: Joi.string()
+    .required()
+    .optional(),
   username: Joi.string()
     .alphanum()
     .min(3)
     .max(30)
-    .required(),
+    .required()
+    .optional(),
   email: Joi.string()
     .email()
     .required()
+    .optional()
 })
 
 const removeSensitiveData = user => {
@@ -141,9 +147,23 @@ async function create (user) {
 async function update (user) {
   await getById(user.id)
 
-  user.password = user.password
-    ? await generateCryptedPassword(user.password)
-    : null
+  if (user.email) {
+    const existingUser = await repository.getByEmail(user.email)
+    if (existingUser && existingUser.id !== user.id) {
+      throw new Error('Email already exists')
+    }
+  }
+
+  if (user.username) {
+    const existingUser = await repository.getByUsername(user.username)
+    if (existingUser && existingUser.id !== user.id) {
+      throw new Error('Username already exists')
+    }
+  }
+
+  if (user.password) {
+    user.password = await generateCryptedPassword(user.password)
+  }
 
   await repository.update(user)
 
