@@ -1,4 +1,5 @@
 const snakeCase = require('snakecase-keys')
+const moment = require('moment')
 const db = require('../database')
 
 const COLUMNS = [
@@ -7,7 +8,9 @@ const COLUMNS = [
   'users.last_name as lastName',
   'users.username',
   'users.email',
-  'users.password'
+  'users.password',
+  'users.password_reset_token as passwordResetToken',
+  'users.password_reset_expires as passwordResetExpires'
 ]
 
 async function getByUsername (username) {
@@ -37,8 +40,8 @@ async function getById (id) {
 async function create (user) {
   delete user.passwordConfirm
 
-  user.created_at = new Date().toUTCString()
-  user.updated_at = new Date().toUTCString()
+  user.createdAt = moment().format()
+  user.updatedAt = moment().format()
 
   return db
     .insert(snakeCase(user))
@@ -49,7 +52,7 @@ async function create (user) {
 async function update (user) {
   delete user.passwordConfirm
 
-  user.updated_at = new Date().toUTCString()
+  user.updatedAt = moment().format()
 
   return db
     .update(snakeCase(user))

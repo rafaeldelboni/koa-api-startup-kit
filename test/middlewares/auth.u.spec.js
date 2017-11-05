@@ -1,4 +1,4 @@
-process.env.JWT_SECRET = 'secret'
+process.env.APP_SECRET = 'secret'
 
 class MockedCtx {
   constructor (ctx = {}) {

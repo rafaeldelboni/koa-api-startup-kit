@@ -1,6 +1,9 @@
 const Joi = require('joi')
+const moment = require('moment')
 const bcrypt = require('bcrypt')
-const saltRounds = 10
+const uuidv4 = require('uuid/v4')
+
+const saltRounds = parseInt(process.env.APP_SALT_ROUNDS)
 
 const repository = require('./repository')
 
@@ -67,6 +70,8 @@ const schemaUpdate = Joi.object().keys({
 
 const removeSensitiveData = user => {
   delete user.password
+  delete user.passwordResetToken
+  delete user.passwordResetExpires
   return user
 }
 
@@ -128,6 +133,21 @@ async function getByUsernameOrEmailAndPassword (usernameOrEmail, password) {
   return removeSensitiveData(user)
 }
 
+async function getByEmailAndPasswordResetToken (email, token) {
+  const user = await repository.getByEmail(email)
+
+  if (!user) {
+    throw new Error('Email not found')
+  } else if (
+    user.passwordResetToken !== token ||
+    user.passwordResetExpires < moment().format()
+  ) {
+    throw new Error('Invalid or Expired token')
+  }
+
+  return removeSensitiveData(user)
+}
+
 async function create (user) {
   if (await repository.getByEmail(user.email)) {
     throw new Error('Email already exists')
@@ -171,6 +191,39 @@ async function update (user) {
   return { status: 'ok' }
 }
 
+async function updatePasswordResetToken (email) {
+  const existingUser = await getByEmail(email)
+
+  const user = {
+    id: existingUser.id,
+    passwordResetToken: uuidv4(),
+    passwordResetExpires: moment()
+      .add(1, 'hour')
+      .format()
+  }
+  await repository.update(user)
+
+  return {
+    status: 'ok',
+    token: user.passwordResetToken,
+    expires: user.passwordResetExpires
+  }
+}
+
+async function updatePasswordReset (email, token, password) {
+  const existingUser = await getByEmailAndPasswordResetToken(email, token)
+
+  const user = {
+    id: existingUser.id,
+    password,
+    passwordResetToken: null,
+    passwordResetExpires: null
+  }
+  await repository.update(user)
+
+  return { status: 'ok' }
+}
+
 async function removeById (id) {
   await getById(id)
   await repository.removeById(id)
@@ -188,7 +241,10 @@ module.exports = {
   getByEmail,
   getByUsername,
   getByUsernameOrEmailAndPassword,
+  getByEmailAndPasswordResetToken,
   create,
   update,
+  updatePasswordResetToken,
+  updatePasswordReset,
   removeById
 }

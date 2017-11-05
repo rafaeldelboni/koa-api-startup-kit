@@ -1,3 +1,6 @@
+const moment = require('moment')
+const joi = require('joi')
+
 const plainText = 'pass'
 const cryptText = '$2a$06$/S0FLSPCz01ov4s4qeQ1qe5o0EYP0hT/tFlQ.HejoyFjC.4MtOfk2'
 
@@ -185,6 +188,64 @@ describe('unit', () => {
           }
         })
       })
+      describe('getByEmailAndPasswordResetToken', () => {
+        it('get user by email and pass reset token', async function () {
+          mockUser.passwordResetToken = 'super-secret-token'
+          mockUser.passwordResetExpires = moment()
+            .add(1, 'hours')
+            .format()
+
+          const user = await userModel.getByEmailAndPasswordResetToken(
+            'user@mail.co',
+            'super-secret-token'
+          )
+          expect(user).toBe(mockUser)
+        })
+        it('dont get user by invalid email', async function () {
+          mockGetByEmail.mockReturnValueOnce(null)
+          expect.assertions(1)
+          try {
+            await userModel.getByEmailAndPasswordResetToken(
+              'user@mail.co',
+              'super-secret-token'
+            )
+          } catch (error) {
+            expect(error.message).toBe('Email not found')
+          }
+        })
+        it('dont get user by email and invalid token', async function () {
+          mockUser.passwordResetToken = 'super-secret-token'
+          mockUser.passwordResetExpires = moment()
+            .add(1, 'hours')
+            .format()
+
+          expect.assertions(1)
+          try {
+            await userModel.getByEmailAndPasswordResetToken(
+              'user@mail.co',
+              'super-invalid-token'
+            )
+          } catch (error) {
+            expect(error.message).toBe('Invalid or Expired token')
+          }
+        })
+        it('dont get user by email and expired token', async function () {
+          mockUser.passwordResetToken = 'super-secret-token'
+          mockUser.passwordResetExpires = moment()
+            .subtract(1, 'hours')
+            .format()
+
+          expect.assertions(1)
+          try {
+            await userModel.getByEmailAndPasswordResetToken(
+              'user@mail.co',
+              'super-secret-token'
+            )
+          } catch (error) {
+            expect(error.message).toBe('Invalid or Expired token')
+          }
+        })
+      })
       describe('create', () => {
         it('create user', async function () {
           mockGetByEmail.mockReturnValueOnce(null)
@@ -294,6 +355,93 @@ describe('unit', () => {
             })
           } catch (error) {
             expect(error.message).toBe('Username already exists')
+          }
+        })
+      })
+      describe('updatePasswordResetToken', () => {
+        it('should update user with reset token', async function () {
+          mockGetByEmail.mockReturnValueOnce({
+            id: 123,
+            name: 'test',
+            password: cryptText,
+            email: 'email@email.cc'
+          })
+          const result = await userModel.updatePasswordResetToken(
+            'email@email.cc'
+          )
+          const validation = joi.validate(
+            result,
+            joi.object().keys({
+              expires: joi
+                .date()
+                .min('now')
+                .required(),
+              status: joi.string().required(),
+              token: joi
+                .string()
+                .guid()
+                .required()
+            })
+          )
+          expect(validation.error).toBeNull()
+        })
+        it('should not reset token for non existing user', async function () {
+          mockGetByEmail.mockReturnValueOnce(null)
+          expect.assertions(1)
+          try {
+            await userModel.updatePasswordResetToken('email@email.cc')
+          } catch (error) {
+            expect(error.message).toBe('Email not found')
+          }
+        })
+      })
+      describe('updatePasswordReset', () => {
+        it('should update password', async function () {
+          const resetUser = await userModel.updatePasswordResetToken(
+            'email@email.cc'
+          )
+          mockGetByEmail.mockReturnValueOnce({
+            id: 123,
+            name: 'test',
+            password: cryptText,
+            email: 'email@email.cc',
+            passwordResetToken: resetUser.token,
+            passwordResetExpires: resetUser.expires
+          })
+          const result = await userModel.updatePasswordReset(
+            'email@email.cc',
+            resetUser.token,
+            'hyper-new-pass'
+          )
+          expect(result).toEqual({ status: 'ok' })
+          expect(mockUpdate.mock.calls[1][0]).toEqual({
+            id: 123,
+            password: 'hyper-new-pass',
+            passwordResetToken: null,
+            passwordResetExpires: null
+          })
+        })
+        it('should not update password', async function () {
+          const resetUser = await userModel.updatePasswordResetToken(
+            'email@email.cc'
+          )
+          mockGetByEmail.mockReturnValueOnce({
+            id: 123,
+            name: 'test',
+            password: cryptText,
+            email: 'email@email.cc',
+            passwordResetToken: resetUser.token,
+            passwordResetExpires: resetUser.expires
+          })
+          expect.assertions(1)
+          try {
+            await userModel.updatePasswordReset(
+              'email@email.cc',
+              'very-not-the-token',
+              'hyper-new-pass'
+            )
+          } catch (error) {
+            expect(error.message).toBe('Invalid or Expired token')
           }
         })
       })

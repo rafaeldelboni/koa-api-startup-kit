@@ -4,12 +4,14 @@ dotenv.config()
 jest.mock('koa2-winston', () => {
   return { logger: jest.fn(() => jest.fn((ctx, next) => next())) }
 })
+
 const jsonwebtoken = require('jsonwebtoken')
 const app = require('../../src/app')
 const supertest = require('supertest')
 const database = require('../../src/database')
 const repository = require('../../src/users/repository')
 
+const appSecret = process.env.APP_SECRET
 const cryptPass = '$2a$06$/S0FLSPCz01ov4s4qeQ1qe5o0EYP0hT/tFlQ.HejoyFjC.4MtOfk2'
 let userFactory = (attrs = {}) => ({
   firstName: attrs.firstName || 'first',
@@ -41,10 +43,7 @@ describe('acceptance', () => {
         .post('/users/login')
         .send({ username: 'loginuser', password: 'pass' })
 
-      const decoded = jsonwebtoken.verify(
-        result.body.token,
-        process.env.JWT_SECRET
-      )
+      const decoded = jsonwebtoken.verify(result.body.token, appSecret)
 
       expect(result.status).toBe(200)
       expect(decoded).toMatchSnapshot()
@@ -59,10 +58,7 @@ describe('acceptance', () => {
         })
       )
 
-      const decoded = jsonwebtoken.verify(
-        result.body.token,
-        process.env.JWT_SECRET
-      )
+      const decoded = jsonwebtoken.verify(result.body.token, appSecret)
 
       expect(result.status).toBe(200)
       expect(decoded).toMatchSnapshot()
@@ -94,10 +90,7 @@ describe('acceptance', () => {
         })
       )
 
-      const decoded = jsonwebtoken.verify(
-        signupResult.body.token,
-        process.env.JWT_SECRET
-      )
+      const decoded = jsonwebtoken.verify(signupResult.body.token, appSecret)
 
       const result = await request
         .delete(`/users/${decoded.id}`)
@@ -119,10 +112,7 @@ describe('acceptance', () => {
         })
       )
 
-      const decoded = jsonwebtoken.verify(
-        signupResult.body.token,
-        process.env.JWT_SECRET
-      )
+      const decoded = jsonwebtoken.verify(signupResult.body.token, appSecret)
 
       const result = await request
         .put(`/users/${decoded.id}`)

@@ -6,7 +6,9 @@ let userFactory = (attrs = {}) => ({
   lastName: attrs.lastName || 'last',
   username: attrs.username || `username${Date.now()}`,
   email: attrs.email || `email${Date.now()}@email.cc`,
-  password: attrs.password || 'password'
+  password: attrs.password || 'password',
+  passwordResetToken: attrs.passwordResetToken,
+  passwordResetExpires: attrs.passwordResetExpires
 })
 
 describe('integration', () => {

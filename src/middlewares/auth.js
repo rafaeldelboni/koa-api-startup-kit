@@ -6,7 +6,7 @@ const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt')
 const { getByUsernameOrEmailAndPassword, getById } = require('../users/model')
 
 const signJwt = user =>
-  jsonwebtoken.sign(JSON.stringify(user), process.env.JWT_SECRET)
+  jsonwebtoken.sign(JSON.stringify(user), process.env.APP_SECRET)
 
 async function generateJwt (ctx, next, error, user) {
   if (error) {
@@ -50,7 +50,7 @@ passport.use(
 passport.use(
   new JwtStrategy(
     {
-      secretOrKey: process.env.JWT_SECRET,
+      secretOrKey: process.env.APP_SECRET,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
     },
     async function (payload, callback) {
