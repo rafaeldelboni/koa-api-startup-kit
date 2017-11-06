@@ -414,12 +414,12 @@ describe('unit', () => {
             'hyper-new-pass'
           )
           expect(result).toEqual({ status: 'ok' })
-          expect(mockUpdate.mock.calls[1][0]).toEqual({
-            id: 123,
-            password: 'hyper-new-pass',
-            passwordResetToken: null,
-            passwordResetExpires: null
-          })
+          expect(mockUpdate.mock.calls[1][0].id).toEqual(123)
+          expect(mockUpdate.mock.calls[1][0].password).not.toEqual(
+            'hyper-new-pass'
+          )
+          expect(mockUpdate.mock.calls[1][0].passwordResetToken).toBeNull()
+          expect(mockUpdate.mock.calls[1][0].passwordResetExpires).toBeNull()
         })
         it('should not update password', async function () {
           const resetUser = await userModel.updatePasswordResetToken(

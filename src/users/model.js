@@ -201,7 +201,7 @@ async function updatePasswordResetToken (email) {
       .add(1, 'hour')
       .format()
   }
-  await repository.update(user)
+  await update(user)
 
   return {
     status: 'ok',
@@ -219,7 +219,7 @@ async function updatePasswordReset (email, token, password) {
     passwordResetToken: null,
     passwordResetExpires: null
   }
-  await repository.update(user)
+  await update(user)
 
   return { status: 'ok' }
 }
