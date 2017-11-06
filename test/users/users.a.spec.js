@@ -1,8 +1,14 @@
+jest.setTimeout(10000)
+
 const dotenv = require('dotenv')
 dotenv.config()
 
 jest.mock('koa2-winston', () => {
   return { logger: jest.fn(() => jest.fn((ctx, next) => next())) }
+})
+
+jest.mock('../../src/helpers/email/config', () => {
+  return { jsonTransport: true, auth: { user: 'rand@email.cc' } }
 })
 
 const jsonwebtoken = require('jsonwebtoken')

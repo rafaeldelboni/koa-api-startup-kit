@@ -1,5 +1,7 @@
 const auth = require('../middlewares/auth')
 const validation = require('../middlewares/koa-joi')
+const email = require('../helpers/email')
+
 const router = require('koa-router')({ prefix: '/user(s\\b|\\b)' })
 
 const model = require('./model')
@@ -15,6 +17,22 @@ async function postSignup (ctx) {
     ctx.body = {
       token: await auth.signJwt(created.user)
     }
+  } catch (error) {
+    ctx.logAndThrow(error)
+  }
+}
+
+async function postForgotPassword (ctx) {
+  const payload = ctx.request.body
+  try {
+    const resetToken = await model.updatePasswordResetToken(payload.email)
+    await email.send({
+      to: payload.email,
+      subject: 'Reset your password',
+      template: 'password-reset',
+      data: resetToken
+    })
+    ctx.body = { status: resetToken.status }
   } catch (error) {
     ctx.logAndThrow(error)
   }
@@ -56,6 +74,7 @@ async function remove (ctx) {
 router
   .post('/login', validation(model.schemaLogin), auth.local(), postLogin)
   .post('/signup', validation(model.schemaSignup), postSignup)
+  .post('/forgot', validation(model.schemaForgotPassword), postForgotPassword)
   .get('/', auth.jwt(), get)
   .put('/:id', validation(model.schemaUpdate), auth.jwt(), put)
   .delete('/:id', auth.jwt(), remove)
@@ -63,6 +82,7 @@ router
 module.exports = {
   postLogin,
   postSignup,
+  postForgotPassword,
   get,
   put,
   remove,

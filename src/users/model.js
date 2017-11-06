@@ -68,6 +68,30 @@ const schemaUpdate = Joi.object().keys({
     .optional()
 })
 
+const schemaForgotPassword = Joi.object().keys({
+  email: Joi.string()
+    .email()
+    .required()
+})
+
+const schemaResetPassword = Joi.object().keys({
+  password: Joi.string()
+    .min(8)
+    .max(25)
+    .required(),
+  passwordConfirm: Joi.any()
+    .valid(Joi.ref('password'))
+    .required()
+    .options({
+      language: {
+        any: {
+          allowOnly: 'Passwords must be the same'
+        }
+      }
+    })
+    .strip()
+})
+
 const removeSensitiveData = user => {
   delete user.password
   delete user.passwordResetToken
@@ -235,6 +259,8 @@ module.exports = {
   schemaLogin,
   schemaSignup,
   schemaUpdate,
+  schemaForgotPassword,
+  schemaResetPassword,
   checkCryptedPassword,
   generateCryptedPassword,
   getById,

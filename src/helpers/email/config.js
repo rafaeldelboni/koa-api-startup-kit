@@ -1,6 +1,5 @@
-const nodemailer = require('nodemailer')
-
 const {
+  NODE_ENV: enviroment,
   EMAIL_SMTP_HOST: smtpHost,
   EMAIL_SMTP_PORT: smtpPort,
   EMAIL_SMTP_SSL: smtpSecure,
@@ -12,8 +11,8 @@ const {
   TEST_EMAIL_SMTP_PASS: testSmtpPass
 } = process.env
 
-const mailConfig =
-  process.env.NODE_ENV === 'production'
+module.exports =
+  enviroment === 'production'
     ? {
       host: smtpHost,
       port: smtpPort,
@@ -31,5 +30,3 @@ const mailConfig =
         pass: testSmtpPass
       }
     }
-
-module.exports = nodemailer.createTransport(mailConfig)
