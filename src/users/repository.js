@@ -58,6 +58,7 @@ async function update (user) {
     .update(snakeCase(user))
     .table('users')
     .where('users.id', user.id)
+    .returning(COLUMNS)
 }
 
 async function removeById (id) {

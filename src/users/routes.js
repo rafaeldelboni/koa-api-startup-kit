@@ -38,6 +38,26 @@ async function postForgotPassword (ctx) {
   }
 }
 
+async function postResetPassword (ctx) {
+  const payload = ctx.request.body
+  try {
+    const resetUser = await model.updatePasswordReset(
+      payload.email,
+      payload.token,
+      payload.password
+    )
+    await email.send({
+      to: payload.email,
+      subject: 'Your password has changed',
+      template: 'password-change',
+      data: resetUser
+    })
+    ctx.body = { status: resetUser.status }
+  } catch (error) {
+    ctx.logAndThrow(error)
+  }
+}
+
 async function get (ctx) {
   try {
     ctx.body = await model.getById(ctx.state.user.id)
@@ -74,7 +94,8 @@ async function remove (ctx) {
 router
   .post('/login', validation(model.schemaLogin), auth.local(), postLogin)
   .post('/signup', validation(model.schemaSignup), postSignup)
-  .post('/forgot', validation(model.schemaForgotPassword), postForgotPassword)
+  .put('/forgot', validation(model.schemaForgotPassword), postForgotPassword)
+  .put('/reset', validation(model.schemaResetPassword), postResetPassword)
   .get('/', auth.jwt(), get)
   .put('/:id', validation(model.schemaUpdate), auth.jwt(), put)
   .delete('/:id', auth.jwt(), remove)

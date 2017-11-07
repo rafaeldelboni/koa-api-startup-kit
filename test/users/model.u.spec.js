@@ -36,7 +36,7 @@ describe('unit', () => {
         mockGetByEmail.mockReturnValue(mockUser)
         mockGetByUsername.mockReturnValue(mockUser)
         mockCreate.mockReturnValue([mockUser])
-        mockUpdate.mockReturnValue(mockStatus)
+        mockUpdate.mockReturnValue([mockUser])
         mockRemoveById.mockReturnValue(mockStatus)
         mockGetById.mockClear()
         mockGetByEmail.mockClear()
@@ -305,7 +305,13 @@ describe('unit', () => {
             email: 'email@test.com',
             password: 'blabla123'
           })
-          expect(result).toEqual({ status: 'ok' })
+          expect(result).toEqual({
+            status: 'ok',
+            user: {
+              id: 123,
+              name: 'test'
+            }
+          })
         })
         it('should not update non existing user', async function () {
           mockGetById.mockReturnValueOnce(null)
@@ -380,7 +386,8 @@ describe('unit', () => {
               token: joi
                 .string()
                 .guid()
-                .required()
+                .required(),
+              user: joi.object()
             })
           )
           expect(validation.error).toBeNull()
@@ -413,7 +420,13 @@ describe('unit', () => {
             resetUser.token,
             'hyper-new-pass'
           )
-          expect(result).toEqual({ status: 'ok' })
+          expect(result).toEqual({
+            status: 'ok',
+            user: {
+              id: 123,
+              name: 'test'
+            }
+          })
           expect(mockUpdate.mock.calls[1][0].id).toEqual(123)
           expect(mockUpdate.mock.calls[1][0].password).not.toEqual(
             'hyper-new-pass'

@@ -75,6 +75,12 @@ const schemaForgotPassword = Joi.object().keys({
 })
 
 const schemaResetPassword = Joi.object().keys({
+  email: Joi.string()
+    .email()
+    .required(),
+  token: Joi.string()
+    .guid()
+    .required(),
   password: Joi.string()
     .min(8)
     .max(25)
@@ -210,9 +216,11 @@ async function update (user) {
     user.password = await generateCryptedPassword(user.password)
   }
 
-  await repository.update(user)
-
-  return { status: 'ok' }
+  const updated = await repository.update(user)
+  return {
+    status: 'ok',
+    user: removeSensitiveData(updated[0])
+  }
 }
 
 async function updatePasswordResetToken (email) {
@@ -225,10 +233,11 @@ async function updatePasswordResetToken (email) {
       .add(1, 'hour')
       .format()
   }
-  await update(user)
 
+  const updated = await update(user)
   return {
     status: 'ok',
+    user: updated.user,
     token: user.passwordResetToken,
     expires: user.passwordResetExpires
   }
@@ -243,9 +252,12 @@ async function updatePasswordReset (email, token, password) {
     passwordResetToken: null,
     passwordResetExpires: null
   }
-  await update(user)
 
-  return { status: 'ok' }
+  const updated = await update(user)
+  return {
+    status: 'ok',
+    user: updated.user
+  }
 }
 
 async function removeById (id) {

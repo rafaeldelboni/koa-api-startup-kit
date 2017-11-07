@@ -39,5 +39,24 @@ Object {
 exports[`acceptance users PUT / should update user 1`] = `
 Object {
   "status": "ok",
+  "user": Object {
+    "email": "test@test.cc",
+    "firstName": "first",
+    "id": 1,
+    "lastName": "last",
+    "username": "username2",
+  },
+}
+`;
+
+exports[`acceptance users PUT /forgot should update passwordResetToken user 1`] = `
+Object {
+  "status": "ok",
+}
+`;
+
+exports[`acceptance users PUT /reset should update user password 1`] = `
+Object {
+  "status": "ok",
 }
 `;
