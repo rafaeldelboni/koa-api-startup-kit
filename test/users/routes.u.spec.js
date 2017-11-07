@@ -16,6 +16,8 @@ const ctx = {
 const mockGetById = jest.fn()
 const mockCreate = jest.fn()
 const mockUpdate = jest.fn()
+const mockUpdatePasswordResetToken = jest.fn()
+const mockUpdatePasswordReset = jest.fn()
 const mockRemoveById = jest.fn()
 
 jest.mock('../../src/users/model', () => {
@@ -23,6 +25,8 @@ jest.mock('../../src/users/model', () => {
     getById: mockGetById,
     create: mockCreate,
     update: mockUpdate,
+    updatePasswordResetToken: mockUpdatePasswordResetToken,
+    updatePasswordReset: mockUpdatePasswordReset,
     removeById: mockRemoveById
   }
 })
@@ -39,6 +43,13 @@ jest.mock('../../src/middlewares/auth', () => {
   }
 })
 
+const mockSend = jest.fn()
+
+jest.mock('../../src/helpers/email', () => {
+  return {
+    send: mockSend
+  }
+})
 const userRoutes = require('../../src/users/routes')
 
 describe('unit', () => {
@@ -52,14 +63,25 @@ describe('unit', () => {
         mockGetById.mockReturnValue(mockUser)
         mockCreate.mockReturnValue({ user: mockUser })
         mockUpdate.mockReturnValue(mockStatus)
+        mockUpdatePasswordResetToken.mockReturnValue({
+          status: mockStatus.status,
+          user: mockUser
+        })
+        mockUpdatePasswordReset.mockReturnValue({
+          status: mockStatus.status,
+          user: mockUser
+        })
         mockRemoveById.mockReturnValue(mockStatus)
         mockSignJwt.mockReturnValue('token')
         mockGetById.mockClear()
         mockCreate.mockClear()
         mockUpdate.mockClear()
+        mockUpdatePasswordResetToken.mockClear()
+        mockUpdatePasswordReset.mockClear()
         mockRemoveById.mockClear()
         mockSignJwt.mockClear()
         mockLogAndThrow.mockClear()
+        mockSend.mockClear()
       })
       describe('postLogin', () => {
         it('should return ctx.token in body', async function () {
@@ -81,6 +103,80 @@ describe('unit', () => {
           await userRoutes.postSignup(ctx)
           expect(mockLogAndThrow.mock.calls[0][0].message).toEqual('Test error')
           expect(mockCreate.mock.calls.length).toEqual(1)
+        })
+      })
+      describe('putForgotPassword', () => {
+        it('should send email and return ok in body', async function () {
+          ctx.request.body.email = 'rwar@email.cc'
+          await userRoutes.putForgotPassword(ctx)
+          expect(ctx.body).toEqual({ status: 'ok' })
+          expect(mockUpdatePasswordResetToken.mock.calls).toEqual([
+            ['rwar@email.cc']
+          ])
+          expect(mockSend.mock.calls).toEqual([
+            [
+              {
+                data: {
+                  status: 'ok',
+                  user: {
+                    id: 123,
+                    name: 'test',
+                    password: 'teste'
+                  }
+                },
+                subject: 'Reset your password',
+                template: 'password-reset',
+                to: 'rwar@email.cc'
+              }
+            ]
+          ])
+        })
+        it('should logAndThrow error', async function () {
+          mockUpdatePasswordResetToken.mockImplementation(async () => {
+            throw new Error('Test error')
+          })
+          await userRoutes.putForgotPassword(ctx)
+          expect(mockLogAndThrow.mock.calls[0][0].message).toEqual('Test error')
+          expect(mockUpdatePasswordResetToken.mock.calls.length).toEqual(1)
+        })
+      })
+      describe('putResetPassword', () => {
+        it('should send email and return ok in body', async function () {
+          ctx.request.body = {
+            email: 'rwar@email.cc',
+            token: 'token',
+            password: 'password'
+          }
+          await userRoutes.putResetPassword(ctx)
+          expect(ctx.body).toEqual({ status: 'ok' })
+          expect(mockUpdatePasswordReset.mock.calls).toEqual([
+            ['rwar@email.cc', 'token', 'password']
+          ])
+          expect(mockSend.mock.calls).toEqual([
+            [
+              {
+                data: {
+                  status: 'ok',
+                  user: {
+                    id: 123,
+                    name: 'test',
+                    password: 'teste'
+                  }
+                },
+                subject: 'Your password has changed',
+                template: 'password-change',
+                to: 'rwar@email.cc'
+              }
+            ]
+          ])
+        })
+        it('should logAndThrow error', async function () {
+          mockUpdatePasswordReset.mockImplementation(async () => {
+            throw new Error('Test error')
+          })
+          await userRoutes.putResetPassword(ctx)
+          expect(mockLogAndThrow.mock.calls[0][0].message).toEqual('Test error')
+          expect(mockUpdatePasswordReset.mock.calls.length).toEqual(1)
         })
       })
       describe('get', () => {
