@@ -8,7 +8,6 @@ jest.mock('koa2-winston', () => {
   return { logger: jest.fn(() => jest.fn((ctx, next) => next())) }
 })
 
-const mockSend = jest.fn()
 jest.mock('../../src/helpers/email/config', () => {
   return { jsonTransport: true, auth: { user: 'admin@test.cc' } }
 })
@@ -33,7 +32,6 @@ let userFactory = (attrs = {}) => ({
 describe('acceptance', () => {
   const request = supertest.agent(app.listen())
   beforeEach(async () => {
-    mockSend.mockClear()
     return database.table('users').truncate()
   })
   afterAll(async () => {
