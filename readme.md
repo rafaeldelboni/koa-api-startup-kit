@@ -4,7 +4,7 @@ My personal Koa2 API startup kit, feel free to use and contribute if you like.
 
 # Prerequisites
 - [Docker](https://www.docker.com)
-- [Node.js 8.0+](http://nodejs.org)
+- [Node.js 8.9+](http://nodejs.org)
 
 # Setup Development Environment
 
@@ -66,8 +66,7 @@ _You need a database running with all migrations for the integration and accepta
 
 ## Todos
 
- - Email API (+Tests)
- - Password change & reset (via email)
+ - Email Template API (+Tests)
  - Docker compose infrastructure
  - CI/CD Jenkinks
  - Production environment
