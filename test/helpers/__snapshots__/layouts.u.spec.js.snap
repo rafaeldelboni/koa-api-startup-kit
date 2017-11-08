@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`unit helpers layouts render should render html 1`] = `"<p><b>your-super-app-name</b>test</p>"`;

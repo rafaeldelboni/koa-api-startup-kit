@@ -1,6 +1,12 @@
 const fs = require('fs')
 const handlebars = require('handlebars')
 
+const { APP_NAME } = process.env
+
+handlebars.registerHelper('appName', opts => {
+  return APP_NAME
+})
+
 function read (filename) {
   return fs.readFileSync(filename, { encoding: 'utf8' })
 }
