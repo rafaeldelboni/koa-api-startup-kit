@@ -66,7 +66,6 @@ _You need a database running with all migrations for the integration and accepta
 
 ## Todos
 
- - Email Template API (+Tests)
  - Docker compose infrastructure
  - CI/CD Jenkinks
  - Production environment
