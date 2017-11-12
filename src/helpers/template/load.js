@@ -1,19 +1,23 @@
-const fs = require('fs')
+const { readFileSync, readdirSync } = require('fs')
 const handlebars = require('handlebars')
 
-const { APP_NAME } = process.env
+const { APP_NAME, APP_FRONTEND_URL } = process.env
 
 handlebars.registerHelper('appName', opts => {
   return APP_NAME
 })
 
+handlebars.registerHelper('appUrl', opts => {
+  return APP_FRONTEND_URL
+})
+
 function read (filename) {
-  return fs.readFileSync(filename, { encoding: 'utf8' })
+  return readFileSync(filename, { encoding: 'utf8' })
 }
 
 module.exports = function (directory) {
   const result = new Map()
-  const fileList = fs.readdirSync(directory)
+  const fileList = readdirSync(directory)
 
   fileList.map(file => {
     result.set(

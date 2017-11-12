@@ -29,7 +29,7 @@ async function putForgotPassword (ctx) {
     await email.send({
       to: payload.email,
       subject: 'Reset your password',
-      template: 'password-reset',
+      layout: 'password-reset',
       data: resetToken
     })
     ctx.body = { status: resetToken.status }
@@ -49,7 +49,7 @@ async function putResetPassword (ctx) {
     await email.send({
       to: payload.email,
       subject: 'Your password has changed',
-      template: 'password-change',
+      layout: 'password-changed',
       data: reset
     })
     ctx.body = { status: reset.status }

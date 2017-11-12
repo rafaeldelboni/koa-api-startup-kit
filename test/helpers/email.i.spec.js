@@ -3,6 +3,13 @@ jest.setTimeout(10000)
 const dotenv = require('dotenv')
 dotenv.config()
 
+process.env.APP_NAME = 'your-super-app-name'
+
+const mockTemplate = jest.fn(() => '<p><b>App Name</b> User Name</p>')
+jest.mock('../../src/helpers/template', () => {
+  return mockTemplate
+})
+
 const email = require('../../src/helpers/email')
 
 describe('integration', () => {
@@ -23,8 +30,8 @@ describe('integration', () => {
         const result = await email.send({
           to: 'send@helper.cc',
           subject: 'Helper test',
-          template: 'test-helper',
-          data: {}
+          layout: 'test-helper',
+          data: { user: { name: 'userName' } }
         })
         expect(result.response.includes('250')).toBe(true)
       })

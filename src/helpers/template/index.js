@@ -1,5 +1,6 @@
+const { join } = require('path')
 const load = require('./load')
-const diretory = './layouts'
+const diretory = join(__dirname, 'layouts')
 
 const layouts = load(diretory)
 

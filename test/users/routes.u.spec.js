@@ -125,7 +125,7 @@ describe('unit', () => {
                   }
                 },
                 subject: 'Reset your password',
-                template: 'password-reset',
+                layout: 'password-reset',
                 to: 'rwar@email.cc'
               }
             ]
@@ -164,7 +164,7 @@ describe('unit', () => {
                   }
                 },
                 subject: 'Your password has changed',
-                template: 'password-change',
+                layout: 'password-changed',
                 to: 'rwar@email.cc'
               }
             ]
