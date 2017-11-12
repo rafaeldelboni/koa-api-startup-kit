@@ -1,6 +1,9 @@
 const { version } = require('../package.json')
+
 const Koa = require('koa')
 const body = require('koa-bodyparser')
+const cors = require('@koa/cors')
+
 const logger = require('./middlewares/logger')
 
 require('./database')
@@ -16,6 +19,7 @@ index.get('/', function (ctx, next) {
 const app = new Koa()
 
 app
+  .use(cors())
   .use(body())
   .use(logger())
   .use(index.routes())
