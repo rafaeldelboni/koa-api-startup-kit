@@ -1,22 +1,18 @@
 const auth = require('../middlewares/auth')
 const validation = require('../middlewares/koa-joi')
 const email = require('../helpers/email')
-
-const router = require('koa-router')({ prefix: '/user(s\\b|\\b)' })
-
 const model = require('./model')
 
 async function postLogin (ctx) {
-  ctx.body = { token: ctx.state.token }
+  ctx.body = ctx.state.user
 }
 
 async function postSignup (ctx) {
   const user = ctx.request.body
   try {
     const created = await model.create(user)
-    ctx.body = {
-      token: await auth.signJwt(created.user)
-    }
+    const token = await auth.signJwt(created.user)
+    ctx.body = Object.assign(user, { token })
   } catch (error) {
     ctx.logAndThrow(error)
   }
@@ -90,6 +86,8 @@ async function remove (ctx) {
     ctx.logAndThrow(error)
   }
 }
+
+const router = require('koa-router')({ prefix: '/user(s\\b|\\b)' })
 
 router
   .post('/login', validation(model.schemaLogin), auth.local(), postLogin)

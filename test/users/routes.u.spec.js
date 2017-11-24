@@ -57,7 +57,7 @@ describe('unit', () => {
     describe('routes', () => {
       beforeEach(() => {
         ctx.body = null
-        ctx.state.user = { id: 123 }
+        ctx.state.user = { id: 123, token: 'token' }
         ctx.params.id = 123
         mockUser = { id: 123, name: 'test', password: 'teste' }
         mockGetById.mockReturnValue(mockUser)
@@ -86,14 +86,21 @@ describe('unit', () => {
       describe('postLogin', () => {
         it('should return ctx.token in body', async function () {
           await userRoutes.postLogin(ctx)
-          expect(ctx.body).toEqual({ token: 'token' })
+          expect(ctx.body).toEqual({ id: 123, token: 'token' })
         })
       })
       describe('postSignup', () => {
         it('should return ctx.token in body', async function () {
           await userRoutes.postSignup(ctx)
-          expect(ctx.body).toEqual({ token: 'token' })
-          expect(mockCreate.mock.calls).toEqual([[mockUser]])
+          expect(ctx.body).toEqual({
+            id: 123,
+            name: 'test',
+            password: 'teste',
+            token: 'token'
+          })
+          expect(mockCreate.mock.calls).toEqual([
+            [Object.assign(mockUser, { token: 'token' })]
+          ])
           expect(mockSignJwt.mock.calls).toEqual([[mockUser]])
         })
         it('should logAndThrow error', async function () {

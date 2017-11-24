@@ -14,7 +14,8 @@ async function generateJwt (ctx, next, error, user) {
   } else if (!user) {
     ctx.throw(400, 'User not found.')
   } else {
-    ctx.state.token = await signJwt(user)
+    const token = await signJwt(user)
+    ctx.state.user = Object.assign(user, { token })
     await next()
   }
 }
