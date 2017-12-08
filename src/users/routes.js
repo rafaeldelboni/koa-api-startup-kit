@@ -4,7 +4,7 @@ const email = require('../helpers/email')
 const model = require('./model')
 
 async function postLogin (ctx) {
-  ctx.body = ctx.state.user
+  ctx.body = ctx.state
 }
 
 async function postSignup (ctx) {
@@ -12,7 +12,7 @@ async function postSignup (ctx) {
   try {
     const created = await model.create(user)
     const token = await auth.signJwt(created.user)
-    ctx.body = Object.assign(user, { token })
+    ctx.body = { user, token }
   } catch (error) {
     ctx.logAndThrow(error)
   }
