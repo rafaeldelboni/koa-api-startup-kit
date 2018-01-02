@@ -21,7 +21,7 @@ Here you can either choose to have and instance of Postgres installed locally in
 
 Simple example of using Postgres through Docker:  
 ```bash
-  docker run -it -p 5432:5432 -e POSTGRES_USER='root' -e POSTGRES_PASSWORD='password' -e POSTGRES_DB='db_efir' postgres:10
+  docker run -it -p 5432:5432 -e POSTGRES_USER='root' -e POSTGRES_PASSWORD='password' -e POSTGRES_DB='db_koa' postgres:10
 ```
 
 _Keep in mind that sample above don't generate a volume, so it wont persist the data after you stop your docker container._
