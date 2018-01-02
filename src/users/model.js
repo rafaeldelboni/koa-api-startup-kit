@@ -22,8 +22,8 @@ const schemaLogin = Joi.object().keys({
 })
 
 const schemaSignup = Joi.object().keys({
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
+  firstName: Joi.string(),
+  lastName: Joi.string(),
   username: Joi.string()
     .alphanum()
     .min(3)
