@@ -38,7 +38,7 @@ describe('unit', () => {
           request: {
             body: { username: 'is not a email' }
           },
-          throw: jest.fn()
+          logAndThrow: jest.fn()
         }
       })
 
@@ -48,7 +48,7 @@ describe('unit', () => {
 
       it('should validate wrong input body with `Invalid input` body error text', async () => {
         await validate(ctx)
-        expect(ctx.throw).toHaveBeenCalledWith(500, expectedError, {
+        expect(ctx.logAndThrow).toHaveBeenCalledWith(expectedError, {
           expose: true
         })
       })
@@ -56,7 +56,7 @@ describe('unit', () => {
       it('should validate correct input calling next middleware', async () => {
         ctx.request.body.username = 'r.delboni@deskbookers.com'
         await validate(ctx, next)
-        expect(ctx.throw.mock.calls.length).toBe(0)
+        expect(ctx.logAndThrow.mock.calls.length).toBe(0)
         expect(next).toBeCalled()
       })
     })

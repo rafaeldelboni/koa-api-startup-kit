@@ -10,9 +10,9 @@ const signJwt = user =>
 
 async function generateJwt (ctx, next, error, user) {
   if (error) {
-    ctx.throw(401, error)
+    ctx.logAndThrow(error, 401)
   } else if (!user) {
-    ctx.throw(400, 'User not found.')
+    ctx.logAndThrow('User not found.', 400)
   } else {
     const token = await signJwt(user)
     ctx.state = { user, token }
@@ -22,9 +22,9 @@ async function generateJwt (ctx, next, error, user) {
 
 async function validateJwt (ctx, next, error, user) {
   if (error) {
-    ctx.throw(401, error)
+    ctx.logAndThrow(error, 401)
   } else if (!user) {
-    ctx.throw(400, 'Invalid token.')
+    ctx.logAndThrow('Invalid token.', 400)
   } else {
     ctx.state.user = user
     await next()

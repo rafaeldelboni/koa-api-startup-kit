@@ -2,7 +2,7 @@ process.env.APP_SECRET = 'secret'
 
 class MockedCtx {
   constructor (ctx = {}) {
-    this.throw = jest.fn()
+    this.logAndThrow = jest.fn()
     this.state = {}
   }
 }
@@ -20,7 +20,7 @@ describe('unit', () => {
           const error = 'error123'
 
           await auth.generateJwt(ctx, next, error, null)
-          expect(ctx.throw).toHaveBeenCalledWith(401, error)
+          expect(ctx.logAndThrow).toHaveBeenCalledWith(error, 401)
         })
         it('user not found error triggered', async function () {
           const next = jest.fn()
@@ -29,7 +29,7 @@ describe('unit', () => {
           const user = null
 
           await auth.generateJwt(ctx, next, error, user)
-          expect(ctx.throw).toHaveBeenCalledWith(400, 'User not found.')
+          expect(ctx.logAndThrow).toHaveBeenCalledWith('User not found.', 400)
         })
         it('next called when no errors', async function () {
           const next = jest.fn()
@@ -51,7 +51,7 @@ describe('unit', () => {
           const error = 'error123'
 
           await auth.validateJwt(ctx, next, error, null)
-          expect(ctx.throw).toHaveBeenCalledWith(401, error)
+          expect(ctx.logAndThrow).toHaveBeenCalledWith(error, 401)
         })
         it('user not found error triggered', async function () {
           const next = jest.fn()
@@ -60,7 +60,7 @@ describe('unit', () => {
           const user = null
 
           await auth.validateJwt(ctx, next, error, user)
-          expect(ctx.throw).toHaveBeenCalledWith(400, 'Invalid token.')
+          expect(ctx.logAndThrow).toHaveBeenCalledWith('Invalid token.', 400)
         })
         it('next called when no errors', async function () {
           const next = jest.fn()
