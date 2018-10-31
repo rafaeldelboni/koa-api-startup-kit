@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const moment = require('moment')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const uuidv4 = require('uuid/v4')
 
 const saltRounds = parseInt(process.env.APP_SALT_ROUNDS)
@@ -156,7 +156,7 @@ async function getByUsernameOrEmailAndPassword (usernameOrEmail, password) {
     throw new Error('User not found')
   }
 
-  if (!await checkCryptedPassword(password, user.password)) {
+  if (!(await checkCryptedPassword(password, user.password))) {
     throw new Error('Incorrect password')
   }
 

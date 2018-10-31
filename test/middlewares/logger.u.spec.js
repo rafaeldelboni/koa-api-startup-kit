@@ -8,7 +8,7 @@ class MockedCtx {
 jest.mock('winston', () => {
   return {
     transports: { Console: jest.fn() },
-    Logger: jest.fn(() => {
+    createLogger: jest.fn(() => {
       return { error: jest.fn() }
     })
   }

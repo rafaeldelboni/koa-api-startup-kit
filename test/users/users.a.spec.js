@@ -4,6 +4,15 @@ const moment = require('moment')
 const dotenv = require('dotenv')
 dotenv.config()
 
+jest.mock('winston', () => {
+  return {
+    transports: { Console: jest.fn() },
+    createLogger: jest.fn(() => {
+      return { error: jest.fn() }
+    })
+  }
+})
+
 jest.mock('koa2-winston', () => {
   return { logger: jest.fn(() => jest.fn((ctx, next) => next())) }
 })
@@ -32,7 +41,7 @@ let userFactory = (attrs = {}) => ({
 describe('acceptance', () => {
   const request = supertest.agent(app.listen())
   beforeEach(async () => {
-    return database.table('users').truncate()
+    await database.table('users').truncate()
   })
   afterAll(async () => {
     await database.destroy()
